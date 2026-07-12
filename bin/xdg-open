@@ -1,0 +1,39 @@
+#!/bin/bash
+URL="$1"
+
+echo "Called xdg-open with URL: $URL" >> /tmp/xdg-open.log
+echo "Profile: $ANTIGRAVITY_PROFILE" >> /tmp/xdg-open.log
+
+if [[ "$URL" == *"accounts.google.com/o/oauth2/auth"* ]]; then
+    if [[ "$URL" != *"prompt="* ]]; then
+        URL="${URL}&prompt=select_account"
+    fi
+fi
+
+# Determine which Chrome Profile to use based on the widget profile
+CHROME_PROFILE="Default"
+if [ "$ANTIGRAVITY_PROFILE" = "Account-1" ]; then
+    # ypatil20067
+    CHROME_PROFILE="Default"
+elif [ "$ANTIGRAVITY_PROFILE" = "Account-2" ]; then
+    # mcpatil3232
+    CHROME_PROFILE="Profile 7"
+elif [ "$ANTIGRAVITY_PROFILE" = "Account-3" ]; then
+    # patilneha2365
+    CHROME_PROFILE="Profile 1"
+fi
+
+# Restore the real HOME directory so Chrome can find the user's actual profiles
+# (Because the script is running inside a bwrap environment where HOME is spoofed)
+export HOME="$REAL_HOME"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus"
+
+# Try to use Google Chrome with the specific profile
+if command -v google-chrome >/dev/null 2>&1; then
+    exec google-chrome --profile-directory="$CHROME_PROFILE" "$URL"
+elif command -v google-chrome-stable >/dev/null 2>&1; then
+    exec google-chrome-stable --profile-directory="$CHROME_PROFILE" "$URL"
+else
+    # Fallback if chrome isn't found
+    exec /tmp/xdg-open.real "$URL"
+fi
