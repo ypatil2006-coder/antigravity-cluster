@@ -61,8 +61,8 @@ pkill -f "antigravity --user-data-dir=$REAL_HOME/.config/Antigravity-Profiles/$P
 # Force project migration to run on every boot to workaround the PB-only conversation bug
 STATE_FILE="$MOCK_HOME/.gemini/antigravity-$PROFILE/antigravity_state.pbtxt"
 if [ -f "$STATE_FILE" ]; then
-    sed -i 's/migrate_convos_into_projects: MIGRATION_STATUS_COMPLETED/migrate_convos_into_projects: MIGRATION_STATUS_UNSPECIFIED/' "$STATE_FILE"
-    sed -i 's/migrate_retroactive_projects: RETROACTIVE_MIGRATION_STATUS_COMPLETED_UNNECESSARY/migrate_retroactive_projects: RETROACTIVE_MIGRATION_STATUS_UNSPECIFIED/' "$STATE_FILE"
+    sed -i -E 's/migrate_convos_into_projects:[[:space:]]+MIGRATION_STATUS_COMPLETED/migrate_convos_into_projects: MIGRATION_STATUS_UNSPECIFIED/' "$STATE_FILE"
+    sed -i -E 's/migrate_retroactive_projects:[[:space:]]+RETROACTIVE_MIGRATION_STATUS_COMPLETED_UNNECESSARY/migrate_retroactive_projects: RETROACTIVE_MIGRATION_STATUS_UNSPECIFIED/' "$STATE_FILE"
 fi
 
 # Run the CDP Turbo Injector daemon
